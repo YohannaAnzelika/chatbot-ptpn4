@@ -32,31 +32,36 @@ AgroBotIV adalah chatbot berbasis web yang dirancang untuk membantu pengguna men
    ```
 2. **Instal dependensi:**
 
-   ```npm install
+   ```bash
+   npm install
 
    ```
 
 3. **Mulai server:**
 
-   ```node server.js
+   ```bash
+   node server.js
 
    ```
 
 4. **Buka browser dan akses:**
 
-   ```http://localhost:3000
+   ```bash
+   http://localhost:3000
 
    ```
 
 ## 🗂️ Struktur Proyek
 
+```plaintext
 chatbot-ptpn4/
 ├── public/
-│ └── index.html # Tampilan UI chatbot
-├── chatbot.js # Logika balasan berdasarkan kata kunci
-├── server.js # Server backend Express.js
-├── package.json # Konfigurasi dan dependensi project
-└── README.md # Dokumentasi proyek
+│   └── index.html           # Tampilan UI chatbot
+├── chatbot.js               # Logika balasan berdasarkan kata kunci
+├── server.js                # Server backend Express.js
+├── package.json             # Konfigurasi dan dependensi project
+└── README.md                # Dokumentasi proyek
+```
 
 ## 💡 Contoh Kata Kunci yang Didukung
 
