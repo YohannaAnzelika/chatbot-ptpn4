@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Chatbot PTPN IV</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        overflow-x: hidden;
+      }
+
+      body {
+        margin: 0;
+        font-family: "Segoe UI", sans-serif;
+        background: linear-gradient(to bottom right, #f3f8f4, #eaf5ec, #fefdf8);
+        padding-bottom: 100px;
+        overflow-x: hidden;
+      }
+
+      header {
+        max-width: 720px;
+        margin: 20px auto 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+      }
+
+      header img {
+        height: 40px;
+        width: auto;
+      }
+
+      header h2 {
+        color: #1e4032;
+        font-size: 1.8rem;
+        margin: 0;
+      }
+
+      #chat {
+        max-width: 720px;
+        margin: auto;
+        background: #ffffff;
+        border-radius: 20px;
+        padding: 24px 20px 24px;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.06);
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        min-height: 400px;
+        overflow-y: auto;
+        max-height: calc(100vh - 140px);
+        overflow-wrap: break-word;
+      }
+
+      .msg-bubble {
+        display: flex;
+        gap: 10px;
+        max-width: 85%;
+        animation: fadeIn 0.3s ease-in-out;
+      }
+
+      .bot {
+        flex-direction: row;
+      }
+
+      .user {
+        flex-direction: row-reverse;
+        align-self: flex-end;
+      }
+
+      .avatar {
+        font-size: 26px;
+        margin-top: 4px;
+      }
+
+      .bubble {
+        padding: 14px 18px;
+        border-radius: 18px;
+        font-size: 15px;
+        line-height: 1.5;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.04);
+      }
+
+      .bot .bubble {
+        background: #e7f7eb;
+        color: #205f3d;
+        border-left: 5px solid #c2e7cf;
+      }
+
+      .user .bubble {
+        background: #f7f3e9;
+        color: #5a755e;
+        border-right: 5px solid #afccd3;
+      }
+
+      .input-wrapper {
+        position: fixed;
+        bottom: 20px;
+        left: 0;
+        right: 0;
+        margin: 0 auto;
+        max-width: 750px;
+        padding: 0 20px;
+        z-index: 999;
+      }
+
+      input[type="text"] {
+        width: 100%;
+        padding: 14px 16px;
+        font-size: 16px;
+        border: 2px solid #a2d6af;
+        border-radius: 14px;
+        outline: none;
+        background: #eaefe8;
+        transition: 0.2s;
+        box-shadow: 0 2px 8px rgba(129, 192, 142, 0.2);
+      }
+
+      input[type="text"]:focus {
+        border-color: #8bbba0;
+        box-shadow: 0 0 6px 2px rgba(72, 168, 108, 0.35);
+        transition: box-shadow 0.2s ease;
+      }
+
+      @media (max-width: 600px) {
+        .bubble {
+          max-width: 90%;
+          font-size: 14px;
+        }
+
+        .input-wrapper {
+          padding: 0 10px;
+        }
+
+        input[type="text"] {
+          font-size: 15px;
+        }
+
+        header {
+          flex-direction: column;
+          text-align: center;
+        }
+
+        header img {
+          height: 36px;
+        }
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(6px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <img src="ptpniv_logo.png" alt="Logo PTPN IV" />
+
+      <h2>Chatbot PTPN IV - <strong>AgroBotIV</strong></h2>
+    </header>
+
+    <div id="chat"></div>
+
+    <div class="input-wrapper">
+      <input id="input" type="text" placeholder="Tulis pertanyaan..." />
+    </div>
+
+    <script>
+      const input = document.getElementById("input");
+      const chat = document.getElementById("chat");
+
+      function appendMessage(type, message) {
+        const container = document.createElement("div");
+        container.className = `msg-bubble ${type}`;
+
+        const avatar = document.createElement("div");
+        avatar.className = "avatar";
+        avatar.innerText = type === "bot" ? "🤖" : "👤";
+
+        const bubble = document.createElement("div");
+        bubble.className = "bubble";
+        bubble.innerHTML = message;
+
+        container.appendChild(avatar);
+        container.appendChild(bubble);
+        chat.appendChild(container);
+
+        container.scrollIntoView({ behavior: "smooth", block: "end" });
+      }
+
+      input.addEventListener("keypress", async (e) => {
+        if (e.key === "Enter") {
+          const message = input.value.trim();
+          if (!message) return;
+
+          appendMessage("user", message);
+          input.value = "";
+
+          appendMessage("bot", "<i>AgroBotIV sedang mengetik...</i>");
+
+          const res = await fetch("/chat", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ message }),
+          });
+
+          const data = await res.json();
+          chat.lastChild.remove();
+          appendMessage("bot", data.reply);
+        }
+      });
+
+      window.addEventListener("load", () => {
+        appendMessage("bot", "Hai! Ada yang bisa AgroBotIV bantu? 🤖");
+      });
+    </script>
+    ...
+</script>
+</body>
+</html>
+
+  </body>
+</html>
