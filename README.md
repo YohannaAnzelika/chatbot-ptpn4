@@ -82,13 +82,12 @@ Seluruh hak cipta aplikasi internal PTPN IV tetap dimiliki oleh instansi terkait
 
 ## 👩‍💻 Kontributor
 
-Yohanna Anzelika Sitepu
-Mahasiswa Informatika
-Institut Teknologi Sumatera (ITERA)
+**Yohanna Anzelika Sitepu**  
+_Mahasiswa Informatika - Institut Teknologi Sumatera (ITERA)_
 
 ---
 
-📧 Email: yohanna.122140010@student.itera.ac.id
-💼 LinkedIn: linkedin.com/in/yohanna-anzelika-sitepu-401578229
-📸 Instagram: @yohannalika
-💻 GitHub: @YohannaAnzelika
+- 📧 **Email:** [yohanna.122140010@student.itera.ac.id](mailto:yohanna.122140010@student.itera.ac.id)
+- 💼 **LinkedIn:** [linkedin.com/in/yohanna-anzelika-sitepu-401578229](https://www.linkedin.com/in/yohanna-anzelika-sitepu-401578229/)
+- 📸 **Instagram:** [@yohannalika](https://www.instagram.com/yohannalika/)
+- 💻 **GitHub:** [@YohannaAnzelika](https://github.com/YohannaAnzelika)
