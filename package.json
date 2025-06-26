@@ -1,5 +1,15 @@
 {
+  "name": "chatbot-ptpn",
+  "version": "1.0.0",
+  "type": "module",
   "dependencies": {
-    "express": "^5.1.0"
+    "body-parser": "^1.20.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "node-fetch": "^3.3.2",
+    "openai": "^5.7.0",
+    "pg": "^8.16.2",
+    "string-similarity": "^4.0.4"
   }
 }

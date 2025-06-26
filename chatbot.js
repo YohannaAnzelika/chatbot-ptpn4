@@ -1,141 +1,71 @@
-function getReply(message) {
-  const msg = message.toLowerCase().trim();
+import express from "express";
+import cors from "cors";
+import bodyParser from "body-parser";
+import dotenv from "dotenv";
+import { pool } from "./db.js";
 
-  const linkMap = [
-    {
-      keywords: ["profil", "tentang", "utama", "beranda"],
-      name: "Situs resmi PTPN IV",
-      url: "https://www.ptpn4.co.id/",
-    },
-    {
-      keywords: ["publik", "informasi publik", "kip"],
-      name: "Portal Informasi Publik",
-      url: "https://kip.ptpn4.co.id/",
-    },
-    {
-      keywords: ["ims", "mutu", "sertifikasi", "management system"],
-      name: "IMS PTPN IV",
-      url: "https://ims.ptpn4.co.id/",
-    },
-    {
-      keywords: ["project", "apps", "proyek", "eproc", "pengadaan"],
-      name: "PTPN4 Project Apps",
-      url: "https://www.ptpn4apps.id/ptpn4-projects/",
-    },
-    {
-      keywords: ["bibit", "perkebunan", "tanaman"],
-      name: "Portal Bibit",
-      url: "https://bibit.ptpn4.co.id/",
-    },
-    {
-      keywords: ["tanam ulang", "dashboard tanam", "replanting", "tanam"],
-      name: "Dashboard Tanam Ulang",
-      url: "https://www.ptpn4apps.id:8089/",
-    },
-    {
-      keywords: ["doctrace r2", "r2", "dashboard r2"],
-      name: "Dashboard DOCTRACE R2",
-      url: "https://www.ptpn4apps.id:8087/",
-    },
-    {
-      keywords: ["produksi", "harian", "produksi harian"],
-      name: "Produksi Harian",
-      url: "https://www.ptpn4apps.id:8086/",
-    },
-    {
-      keywords: [
-        "dhbb",
-        "katalog",
-        "catalogue dhbb",
-        "dhbb online",
-        "online dhbb",
-        "dhbb login",
-      ],
-      name: "DHBB ONLINE",
-      url: "https://www.ptpn4apps.id:8085/",
-    },
-    {
-      keywords: ["tracking lama", "etracking lama"],
-      name: "eTracking (lama)",
-      url: "https://www.ptpn4apps.id:8084/",
-    },
-    {
-      keywords: ["marketing", "sales"],
-      name: "Sales Marketing",
-      url: "https://www.ptpn4apps.id:8083/",
-    },
-    {
-      keywords: ["album", "tbm", "album tbm"],
-      name: "Album TBM V.3",
-      url: "https://www.ptpn4apps.id:8082/",
-    },
-    {
-      keywords: ["teknis", "proses bisnis", "doctrace proses"],
-      name: "Monitoring Proses Bisnis TEKPOL (DOCTRACE)",
-      url: "https://www.ptpn4apps.id:8000/",
-    },
-    {
-      keywords: ["pica", "dashboard pica", "pica tanaman"],
-      name: "PICA TANAMAN",
-      url: "https://gis.ptpn4.or.id/portal/sharing/oauth2/authorize?client_id=opsdashboard&response_type=token&state=%7B%22portalUrl%22%3A%22https%3A%2F%2Fgis.ptpn4.or.id%2Fportal%22%2C%22hash%22%3A%22%23%2F7f5f47f3533348478e082c15824b6561%22%7D&expiration=20160&redirect_uri=https%3A%2F%2Fgis.ptpn4.or.id%2Fportal%2Fapps%2Fopsdashboard%2Findex.html",
-    },
-    {
-      keywords: ["mims", "losses", "ptpn group"],
-      name: "Dashboard MIMS Losses PTPN Group",
-      url: "https://mims-foss.holding-perkebunan.com/",
-    },
-    {
-      keywords: ["tbs", "pembelian tbs", "harga tbs"],
-      name: "PEMBELIAN TBS",
-      url: "https://www.ptpn4apps.id/hargatbsapp/public/login",
-    },
-    {
-      keywords: ["ritel", "teh", "ritel teh"],
-      name: "RITEL TEH N4",
-      url: "https://www.ptpn4apps.id:8090/ptpn4_teh/public/login",
-    },
-    {
-      keywords: ["inventory", "msi inventory", "stok barang"],
-      name: "MSI INVENTORY",
-      url: "https://www.ptpn4apps.id/ptpn4-inv-web/public/login",
-    },
-    {
-      keywords: ["doctrace au31", "au31"],
-      name: "DOCTRACE AU31 v1.0",
-      url: "https://www.ptpn4apps.id:8090/doctraceau31/public/login",
-    },
-    {
-      keywords: ["doctrace spp", "spp"],
-      name: "DOCTRACE SPP",
-      url: "https://www.ptpn4apps.id:8090/doctrace/public/login",
-    },
-    {
-      keywords: ["meeting", "rapat", "booking rapat"],
-      name: "MEETING BOOKING SYSTEM",
-      url: "https://www.ptpn4apps.id:8090/mbs/public/login",
-    },
-    {
-      keywords: ["official", "website resmi", "web ptpn4"],
-      name: "OFFICIAL WEBSITE PTPN4",
-      url: "https://www.ptpn4.co.id/",
-    },
-  ];
+dotenv.config();
+const app = express();
+const port = 3000;
 
-  const matchedItems = linkMap
-    .map((item) => {
-      const found = item.keywords.some((keyword) =>
-        msg.includes(keyword.toLowerCase())
+app.use(cors());
+app.use(bodyParser.json());
+app.use(express.static("public"));
+
+app.post("/chat", async (req, res) => {
+  let { message } = req.body;
+  if (!message) return res.json({ reply: "Pesan kosong!" });
+
+  message = message.toLowerCase().trim();
+  console.log("📩 Pertanyaan:", message); // Debug log
+
+  try {
+    // ✅ Respon sapaan
+    const greetings = ["halo", "hai", "hello", "hi", "apa kabar"];
+    if (greetings.some((greet) => message.includes(greet))) {
+      return res.json({
+        reply:
+          "Halo juga! 👋 AgroBotIV siap bantu kamu cari informasi tentang PTPN IV 😊",
+      });
+    }
+
+    // ✅ Pertanyaan umum 'apa itu ptpn iv'
+    const definisiTriggers = ["apa itu ptpn iv", "tentang ptpn iv", "ptpn iv"];
+    if (definisiTriggers.some((trigger) => message.includes(trigger))) {
+      const query = await pool.query(
+        "SELECT * FROM links WHERE name ILIKE '%profil%' LIMIT 1"
       );
-      return found ? item : null;
-    })
-    .filter(Boolean);
+      if (query.rows.length > 0) {
+        const row = query.rows[0];
+        return res.json({
+          reply: `${row.description}<br/>👉 <a href="${row.url}" target="_blank">${row.name}</a>`,
+        });
+      }
+    }
 
-  if (matchedItems.length > 0) {
-    const matched = matchedItems[0];
-    return `Berikut link yang sesuai permintaan Anda:<br><br>🔗 <a href="${matched.url}" target="_blank">${matched.name}</a>`;
+    // ✅ Pencocokan berdasarkan keyword dalam database
+    const result = await pool.query("SELECT * FROM links");
+    for (let row of result.rows) {
+      if (!row.keyword) continue;
+      for (let keyword of row.keyword) {
+        if (message.includes(keyword.toLowerCase())) {
+          return res.json({
+            reply: `${row.description}<br/>👉 <a href="${row.url}" target="_blank">${row.name}</a>`,
+          });
+        }
+      }
+    }
+
+    // ❌ Tidak cocok apapun
+    return res.json({
+      reply: `Maaf, AgroBotIV hanya bisa menjawab topik seputar <strong>PTPN IV</strong>. Coba ketik seperti: <em>profil, berita, unit usaha</em>, dll. 🙏`,
+    });
+  } catch (err) {
+    console.error("❌ ERROR:", err.message);
+    res.status(500).json({ reply: "Terjadi kesalahan di sisi server." });
   }
+});
 
-  return `Maaf, saya tidak menemukan situs yang sesuai. Silakan coba kata lain seperti: <b>Profil</b>, <b>IMS</b>, <b>Bibit</b>, <b>Publik</b>, atau nama aplikasi seperti <b>Tanam Ulang</b>, <b>DHBB</b>, <b>DOCTRACE</b>, <b>TBS</b>, dll.`;
-}
-
-module.exports = { getReply };
+app.listen(port, () => {
+  console.log(`✅ Server aktif di http://localhost:${port}`);
+});

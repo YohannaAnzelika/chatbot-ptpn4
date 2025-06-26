@@ -5,20 +5,11 @@
     <title>Chatbot PTPN IV</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <style>
-      * {
-        box-sizing: border-box;
-      }
-
-      html {
-        overflow-x: hidden;
-      }
-
       body {
         margin: 0;
         font-family: "Segoe UI", sans-serif;
         background: linear-gradient(to bottom right, #f3f8f4, #eaf5ec, #fefdf8);
         padding-bottom: 100px;
-        overflow-x: hidden;
       }
 
       header {
@@ -32,7 +23,6 @@
 
       header img {
         height: 40px;
-        width: auto;
       }
 
       header h2 {
@@ -46,36 +36,36 @@
         margin: auto;
         background: #ffffff;
         border-radius: 20px;
-        padding: 24px 20px 24px;
+        padding: 24px 20px;
         box-shadow: 0 8px 25px rgba(0, 0, 0, 0.06);
         display: flex;
         flex-direction: column;
         gap: 4px;
         min-height: 400px;
+        max-height: calc(100vh - 180px);
         overflow-y: auto;
-        max-height: calc(100vh - 140px);
         overflow-wrap: break-word;
       }
 
       .msg-bubble {
         display: flex;
-        gap: 10px;
-        max-width: 85%;
+        width: 100%;
         animation: fadeIn 0.3s ease-in-out;
+        align-items: flex-start;
       }
 
       .bot {
-        flex-direction: row;
+        justify-content: flex-start;
       }
 
       .user {
-        flex-direction: row-reverse;
-        align-self: flex-end;
+        justify-content: flex-end;
       }
 
       .avatar {
         font-size: 26px;
         margin-top: 4px;
+        flex-shrink: 0;
       }
 
       .bubble {
@@ -84,6 +74,16 @@
         font-size: 15px;
         line-height: 1.5;
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.04);
+        max-width: 100%;
+        display: inline-block;
+      }
+
+      .bot .avatar {
+        margin-right: 10px;
+      }
+
+      .user .avatar {
+        margin-left: 10px;
       }
 
       .bot .bubble {
@@ -98,57 +98,55 @@
         border-right: 5px solid #afccd3;
       }
 
-      .input-wrapper {
-        position: fixed;
-        bottom: 20px;
-        left: 0;
-        right: 0;
-        margin: 0 auto;
-        max-width: 750px;
-        padding: 0 20px;
-        z-index: 999;
+      .chat-buttons-inline {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 12px;
       }
 
-      input[type="text"] {
-        width: 100%;
-        padding: 14px 16px;
-        font-size: 16px;
-        border: 2px solid #a2d6af;
+      .chat-buttons-inline button {
+        padding: 6px 12px;
         border-radius: 14px;
-        outline: none;
-        background: #eaefe8;
-        transition: 0.2s;
-        box-shadow: 0 2px 8px rgba(129, 192, 142, 0.2);
+        border: 1px solid #8ac7a6;
+        background: #d8f5e2;
+        color: #205f3d;
+        font-size: 13px;
+        cursor: pointer;
       }
 
-      input[type="text"]:focus {
-        border-color: #8bbba0;
-        box-shadow: 0 0 6px 2px rgba(72, 168, 108, 0.35);
-        transition: box-shadow 0.2s ease;
+      .chat-buttons-inline button:hover {
+        background: #c6edd6;
       }
 
-      @media (max-width: 600px) {
-        .bubble {
-          max-width: 90%;
-          font-size: 14px;
-        }
+      #chatForm {
+        max-width: 720px;
+        margin: 20px auto 0;
+        display: flex;
+        gap: 10px;
+        padding: 0 10px;
+      }
 
-        .input-wrapper {
-          padding: 0 10px;
-        }
+      #chatForm input {
+        flex: 1;
+        padding: 12px;
+        border-radius: 12px;
+        border: 2px solid #205f3d;
+        font-size: 15px;
+      }
 
-        input[type="text"] {
-          font-size: 15px;
-        }
+      #chatForm button {
+        padding: 12px 20px;
+        background: #1e4032;
+        color: white;
+        border: none;
+        border-radius: 12px;
+        font-size: 15px;
+        cursor: pointer;
+      }
 
-        header {
-          flex-direction: column;
-          text-align: center;
-        }
-
-        header img {
-          height: 36px;
-        }
+      #chatForm button:hover {
+        background: #143024;
       }
 
       @keyframes fadeIn {
@@ -166,21 +164,25 @@
   <body>
     <header>
       <img src="ptpniv_logo.png" alt="Logo PTPN IV" />
-
       <h2>Chatbot PTPN IV - <strong>AgroBotIV</strong></h2>
     </header>
 
     <div id="chat"></div>
 
-    <div class="input-wrapper">
-      <input id="input" type="text" placeholder="Tulis pertanyaan..." />
-    </div>
+    <form id="chatForm">
+      <input
+        id="userInput"
+        type="text"
+        placeholder="Ketik pertanyaan..."
+        required
+      />
+      <button type="submit">Kirim</button>
+    </form>
 
     <script>
-      const input = document.getElementById("input");
       const chat = document.getElementById("chat");
 
-      function appendMessage(type, message) {
+      function appendMessage(type, message, options = []) {
         const container = document.createElement("div");
         container.className = `msg-bubble ${type}`;
 
@@ -192,43 +194,88 @@
         bubble.className = "bubble";
         bubble.innerHTML = message;
 
-        container.appendChild(avatar);
-        container.appendChild(bubble);
-        chat.appendChild(container);
+        if (options.length) {
+          const btnWrap = document.createElement("div");
+          btnWrap.className = "chat-buttons-inline";
 
+          options.forEach((opt) => {
+            const btn = document.createElement("button");
+            btn.innerText = opt.label;
+            btn.onclick = () => {
+              sendMessage(opt.label);
+            };
+            btnWrap.appendChild(btn);
+          });
+
+          bubble.appendChild(btnWrap);
+        }
+
+        if (type === "bot") {
+          container.appendChild(avatar);
+          container.appendChild(bubble);
+        } else {
+          container.appendChild(bubble);
+          container.appendChild(avatar);
+        }
+
+        chat.appendChild(container);
         container.scrollIntoView({ behavior: "smooth", block: "end" });
       }
 
-      input.addEventListener("keypress", async (e) => {
-        if (e.key === "Enter") {
-          const message = input.value.trim();
-          if (!message) return;
+      async function sendMessage(text) {
+        appendMessage("user", text);
+        appendMessage("bot", "<i>AgroBotIV sedang mengetik...</i>");
 
-          appendMessage("user", message);
-          input.value = "";
-
-          appendMessage("bot", "<i>AgroBotIV sedang mengetik...</i>");
-
+        try {
           const res = await fetch("/chat", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ message }),
+            body: JSON.stringify({ message: text }),
           });
 
           const data = await res.json();
           chat.lastChild.remove();
-          appendMessage("bot", data.reply);
+
+          if (data.reply) {
+            appendMessage("bot", data.reply, data.options || []);
+          }
+        } catch (err) {
+          chat.lastChild.remove();
+          appendMessage("bot", "❌ Gagal menghubungi server.");
+        }
+      }
+
+      document.getElementById("chatForm").addEventListener("submit", (e) => {
+        e.preventDefault();
+        const input = document.getElementById("userInput");
+        const text = input.value.trim();
+        if (text) {
+          sendMessage(text);
+          input.value = "";
         }
       });
 
-      window.addEventListener("load", () => {
+      window.addEventListener("load", async () => {
         appendMessage("bot", "Hai! Ada yang bisa AgroBotIV bantu? 🤖");
+        appendMessage(
+          "bot",
+          "💡 Silakan pilih salah satu kata kunci berikut untuk melihat informasi sistem dan aplikasi di lingkungan PTPN IV."
+        );
+
+        try {
+          const res = await fetch("/chat", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ message: "keyword" }),
+          });
+
+          const data = await res.json();
+          if (data.options)
+            appendMessage("bot", "Berikut opsinya:", data.options);
+        } catch (err) {
+          appendMessage("bot", "❌ Gagal memuat keyword dari server.");
+        }
       });
     </script>
-    ...
-</script>
-</body>
-</html>
-
   </body>
 </html>
